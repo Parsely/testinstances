@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-VERSION=$(python -c "import testinstances; print testinstances")
+VERSION=$(python -c "import testinstances; print testinstances.__version__")
 
 echo "creating tag $VERSION"
 git tag $VERSION

@@ -37,7 +37,7 @@ if 'nosetests' in sys.argv[1:]:
 
 setup(
     name='testinstances',
-    version='0.1.0',
+    version='0.1.1',
     author='Keith Bourgoin',
     author_email='keith at parsely dot com',
     url='https://github.com/Parsely/testinstances',
