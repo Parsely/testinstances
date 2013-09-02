@@ -16,7 +16,7 @@ to the instance.:
 
     from testinstances import RedisInstance
 
-    def TestSomeJunk(unittest.TestCase):
+    class TestSomeJunk(unittest.TestCase):
       def setUp(self):
         # Set up an instance on port 12345
         self.redis = RedisInstance(12345)
@@ -36,7 +36,7 @@ Or, if you wanted to be fancy and avoid the process creation/termination cost fo
 
     from testinstances import MongoInstance
 
-    def TestSomeJunk(unittest.TestCase):
+    class TestSomeJunk(unittest.TestCase):
       @classmethod
       def setUpClass(cls):
         # Set up an instance on port 12345
