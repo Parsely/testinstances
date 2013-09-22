@@ -40,7 +40,7 @@ Or, if you wanted to be fancy and avoid the process creation/termination cost fo
       @classmethod
       def setUpClass(cls):
         # Set up an instance on port 12345
-        cls.mongo = MongInstance(12345)
+        cls.mongo = MongoInstance(12345)
 
       @classmethod
       def tearDownClass(cls):
