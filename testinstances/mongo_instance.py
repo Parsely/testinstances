@@ -17,9 +17,9 @@ limitations under the License.
 import sys
 import logging
 import pymongo
-import subprocess
 import time
 
+from testinstances import utils
 from testinstances.exceptions import ProcessNotStartingError
 from testinstances.managed_instance import ManagedInstance
 
@@ -27,23 +27,24 @@ log = logging.getLogger(__name__)
 
 class MongoInstance(ManagedInstance):
     """A managed mongo instance for testing"""
-    def __init__(self, port, name='mongo'):
+    def __init__(self, port, name='mongo', use_gevent=False):
         """Start mongoinstance on the given port"""
         self.port = port
-        super(MongoInstance, self).__init__('%s-%i' % (name, port))
+        ManagedInstance.__init__(self, '%s-%i' % (name, port), use_gevent=use_gevent)
 
     def _start_process(self):
         """Start the instance process"""
         log.info('Starting mongod on port %i...', self.port)
-        self._process = subprocess.Popen(
+        self._process = utils.Popen(
             args=["mongod",
                   '--port', str(self.port),
                   '--bind_ip', '127.0.0.1',
                   '--dbpath', self._root_dir,
                   '--nojournal',
                   ],
-            stderr=subprocess.STDOUT,
+            stderr=utils.STDOUT,
             stdout=open(self.logfile, 'w'),
+            use_gevent=self.use_gevent,
             )
 
         # Connect to the shiny new instance
@@ -51,7 +52,7 @@ class MongoInstance(ManagedInstance):
         fails = 0
         while self.conn is None:
             try:
-                conn = pymongo.MongoClient(port=self.port)
+                conn = pymongo.MongoClient(port=self.port, use_greenlets=self.use_gevent)
                 if conn.alive():
                     self.conn = conn
             except:

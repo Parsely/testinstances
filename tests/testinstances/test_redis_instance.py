@@ -5,7 +5,6 @@ import unittest
 
 from testinstances import managed_instance, RedisInstance
 from testinstances.exceptions import ProcessNotStartingError
-#from testinstances.redis_instance import RedisInstance
 
 class RedisInstanceTests(unittest.TestCase):
 
@@ -20,7 +19,7 @@ class RedisInstanceTests(unittest.TestCase):
         instance.terminate()
         self.assertRaises(redis.ConnectionError, lambda: instance.conn.info())
 
-    @mock.patch('testinstances.redis_instance.subprocess.Popen')
+    @mock.patch('testinstances.utils.Popen')
     def test_failure(self, *args):
         """Test an instance that refuses to start"""
         self.assertRaises(ProcessNotStartingError, lambda: RedisInstance(10101))
@@ -50,6 +49,13 @@ class RedisInstanceTests(unittest.TestCase):
         dumpfile = os.path.join(here, './resources/dump.rdb')
         instance = RedisInstance(10101, dumpfile=dumpfile)
         self.assertEqual(instance.conn.get('foo'), 'bar')
+        instance.terminate()
+
+    def test_gevent(self):
+        """Test starting redis with gevent."""
+        instance = RedisInstance(10101, use_gevent=True)
+        self.assertEqual(len(managed_instance.running_instances), 1)
+        instance.flush()
         instance.terminate()
 
 

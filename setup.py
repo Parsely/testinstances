@@ -29,7 +29,7 @@ lint_requires = [
     'pyflakes'
 ]
 
-tests_require = ['mock', 'nose', 'coverage']
+tests_require = ['mock', 'nose', 'coverage', 'gevent>=1.0.0']
 
 setup_requires = []
 if 'nosetests' in sys.argv[1:]:

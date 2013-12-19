@@ -6,8 +6,6 @@ import unittest
 from testinstances import managed_instance, MongoInstance, RedisInstance
 from testinstances.exceptions import ProcessRunningError
 from testinstances.managed_instance import ManagedInstance
-#from testinstances.mongo_instance import MongoInstance
-#from testinstances.redis_instance import RedisInstance
 
 class ManagedInstanceTests(unittest.TestCase):
 

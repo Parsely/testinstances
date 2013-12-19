@@ -18,10 +18,10 @@ import logging
 import os
 import redis
 import shutil
-import subprocess
 import sys
 import time
 
+from testinstances import utils
 from testinstances.exceptions import ProcessNotStartingError
 from testinstances.managed_instance import ManagedInstance
 
@@ -29,11 +29,11 @@ log = logging.getLogger(__name__)
 
 class RedisInstance(ManagedInstance):
     """A managed redis instance for testing"""
-    def __init__(self, port, name='redis', dumpfile=None):
+    def __init__(self, port, name='redis', dumpfile=None, use_gevent=False):
         """Start redis instance on the given port and inside root_dir"""
         self.port = port
         self.dumpfile = os.path.abspath(dumpfile) if dumpfile else None
-        super(RedisInstance, self).__init__('%s-%i' % (name, port))
+        ManagedInstance.__init__(self, '%s-%i' % (name, port), use_gevent=use_gevent)
 
 
     def _start_process(self):
@@ -45,14 +45,15 @@ class RedisInstance(ManagedInstance):
                 self.dumpfile,
                 os.path.join(self._root_dir, os.path.basename(self.dumpfile))
             )
-        self._process = subprocess.Popen(
+        self._process = utils.Popen(
             args=["redis-server",
                   '--port', str(self.port),
                   '--bind', '127.0.0.1',
                   '--dir', self._root_dir,
                   ],
-            stderr=subprocess.STDOUT,
+            stderr=utils.STDOUT,
             stdout=open(self.logfile, 'w'),
+            use_gevent=self.use_gevent,
             )
 
         # Connect to the shiny new instance

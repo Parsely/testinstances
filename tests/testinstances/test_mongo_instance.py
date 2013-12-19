@@ -3,7 +3,6 @@ import unittest
 
 from testinstances import managed_instance, MongoInstance
 from testinstances.exceptions import ProcessNotStartingError
-#from testinstances.mongo_instance import MongoInstance
 
 class MongoInstanceTests(unittest.TestCase):
 
@@ -18,7 +17,7 @@ class MongoInstanceTests(unittest.TestCase):
         instance.terminate()
         self.assertFalse(instance.conn.alive())
 
-    @mock.patch('testinstances.mongo_instance.subprocess.Popen')
+    @mock.patch('testinstances.utils.Popen')
     def test_failure(self, *args):
         """Test an instance that refuses to start"""
         self.assertRaises(ProcessNotStartingError, lambda: MongoInstance(10101))
@@ -45,6 +44,13 @@ class MongoInstanceTests(unittest.TestCase):
         instance = MongoInstance(10101)
         logs = instance.get_logs()
         self.assertGreater(len(logs), 1000)
+        instance.terminate()
+
+    def test_gevent(self):
+        """Test starting mongo with gevent."""
+        instance = MongoInstance(10101, use_gevent=True)
+        self.assertEqual(len(managed_instance.running_instances), 1)
+        instance.flush()
         instance.terminate()
 
 

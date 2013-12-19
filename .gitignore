@@ -3,5 +3,6 @@
 *.sw*
 .env
 .tox/
+.coverage
 build/
 dist/

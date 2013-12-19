@@ -19,9 +19,7 @@ import atexit
 import logging
 import os
 import shutil
-import subprocess
 import tempfile
-import threading
 import time
 
 from testinstances.exceptions import ProcessNotStartingError, ProcessRunningError
@@ -43,7 +41,7 @@ atexit.register(_cleanup, exiting=True)
 
 class ManagedInstance(object):
     """Container for mongo/redis/whatever testing instances"""
-    def __init__(self, name):
+    def __init__(self, name, use_gevent=False):
         if name in running_instances:
             raise ProcessRunningError("Process %s is already running!", name)
 
@@ -54,6 +52,7 @@ class ManagedInstance(object):
         self.log = logging.getLogger(name)
         self.logfile = os.path.join(instance_tmpdir, '%s.log' % name)
         self.name = name
+        self.use_gevent = use_gevent
 
         os.mkdir(self._root_dir)
         try:
@@ -65,18 +64,34 @@ class ManagedInstance(object):
         self._start_log_watcher()
         running_instances[self.name] = self
 
+    def _watcher_threading(self, logfile):
+        while True:
+            line = logfile.readline().strip()
+            if not line:
+                continue
+            self.log.info(line)
+
+    def _watcher_gevent(self, logfile):
+        import gevent.socket
+        while True:
+            gevent.socket.wait_read(logfile.fileno())
+            line = logfile.readline().strip()
+            if not line:
+                continue
+            self.log.info(line)
+
     def _start_log_watcher(self):
         """Watch the logfile and forward it to python logging"""
         logfile = open(self.logfile, 'r')
-        def watcher():
-            while True:
-                line = logfile.readline().strip()
-                if not line:
-                    continue
-                self.log.info(line)
-        self._watch_thread = threading.Thread(target=watcher)
-        self._watch_thread.daemon = True
-        self._watch_thread.start()
+        if self.use_gevent:
+            import gevent
+            self._watch_thread = gevent.spawn(self._watcher_gevent, logfile)
+        else:
+            import threading
+            self._watch_thread = threading.Thread(target=self._watcher_threading,
+                                                  args=[logfile])
+            self._watch_thread.daemon = True
+            self._watch_thread.start()
 
     def _start_process(self):
         raise NotImplementedError('nope, try a subclass')
