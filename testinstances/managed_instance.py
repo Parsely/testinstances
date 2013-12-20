@@ -49,7 +49,7 @@ class ManagedInstance(object):
         self._root_dir = os.path.join(instance_tmpdir, name)
 
         self.conn = None
-        self.log = logging.getLogger(name)
+        self.log = logging.getLogger('testinstances.%s' % name)
         self.logfile = os.path.join(instance_tmpdir, '%s.log' % name)
         self.name = name
         self.use_gevent = use_gevent
