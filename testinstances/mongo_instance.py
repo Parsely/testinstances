@@ -71,9 +71,13 @@ class MongoInstance(ManagedInstance):
                 time.sleep(1)
 
         if self.conn is None or self._process.poll() is not None:
+            log.info('Unable to start process. Trying to get process output.')
+            try:
+                log.info(open(self.logfile).read())
+            except:
+                pass  # file doesn't exist or whatever
             raise ProcessNotStartingError(
-                "Unable to start mongod in {} seconds.\nLog output:\n".format(
-                    self.timeout, open(self.logfile).read())
+                "Unable to start mongod in {} seconds.".format(self.timeout)
             )
 
     def flush(self):
