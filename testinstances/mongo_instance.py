@@ -14,7 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import sys
 import logging
 import pymongo
 import time
@@ -23,14 +22,23 @@ from testinstances import utils
 from testinstances.exceptions import ProcessNotStartingError
 from testinstances.managed_instance import ManagedInstance
 
+
 log = logging.getLogger(__name__)
+
 
 class MongoInstance(ManagedInstance):
     """A managed mongo instance for testing"""
-    def __init__(self, port, name='mongo', use_gevent=False):
-        """Start mongoinstance on the given port"""
+    def __init__(self, port, name='mongo', use_gevent=False, timeout=10):
+        """Start mongoinstance on the given port.
+
+        :param use_gevent: If True, use gevent instead of subprocess.
+        :param timout:     Seconds to wait for the process to start.
+        """
         self.port = port
-        ManagedInstance.__init__(self, '%s-%i' % (name, port), use_gevent=use_gevent)
+        self.timeout = timeout
+        ManagedInstance.__init__(self,
+                                 '%s-%i' % (name, port),
+                                 use_gevent=use_gevent)
 
     def _start_process(self):
         """Start the instance process"""
@@ -52,17 +60,20 @@ class MongoInstance(ManagedInstance):
         fails = 0
         while self.conn is None:
             try:
-                conn = pymongo.MongoClient(port=self.port, use_greenlets=self.use_gevent)
+                conn = pymongo.MongoClient(port=self.port,
+                                           use_greenlets=self.use_gevent)
                 if conn.alive():
                     self.conn = conn
             except:
-                if fails == 10:
+                if fails >= self.timeout:
                     break
                 fails += 1
                 time.sleep(1)
 
         if self.conn is None or self._process.poll() is not None:
-            raise ProcessNotStartingError("Unable to start mongod in 10 seconds.")
+            raise ProcessNotStartingError(
+                "Unable to start mongod in {} seconds.".format(self.timeout)
+            )
 
     def flush(self):
         """Flush all data in the db"""
