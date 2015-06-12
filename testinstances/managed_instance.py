@@ -68,6 +68,7 @@ class ManagedInstance(object):
         while True:
             line = logfile.readline().strip()
             if not line:
+                time.sleep(.1)
                 continue
             self.log.info(line)
 
