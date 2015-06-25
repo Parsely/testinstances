@@ -37,9 +37,9 @@ if 'nosetests' in sys.argv[1:]:
 
 setup(
     name='testinstances',
-    version='0.1.1',
+    version='0.2.1',
     author='Keith Bourgoin',
-    author_email='keith at parsely dot com',
+    author_email='keith@parsely.com',
     url='https://github.com/Parsely/testinstances',
     description='Managed test instances for integration tests',
     license='Apache License 2.0',
