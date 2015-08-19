@@ -1,10 +1,18 @@
 import mock
 import os
 import redis
-import unittest
+from testinstances.compat import unittest
+import pytest
 
 from testinstances import managed_instance, RedisInstance
 from testinstances.exceptions import ProcessNotStartingError
+
+try:
+    import gevent
+    HAS_GEVENT = True
+except ImportError:
+    HAS_GEVENT = False
+
 
 class RedisInstanceTests(unittest.TestCase):
 
@@ -29,7 +37,7 @@ class RedisInstanceTests(unittest.TestCase):
         instance = RedisInstance(10101)
 
         instance.conn.set('foo', 'bar')
-        self.assertEqual(instance.conn.get('foo'), 'bar')
+        self.assertEqual(instance.conn.get('foo'), b'bar')
 
         instance.flush()
         self.assertFalse(instance.conn.exists('foo'))
@@ -48,9 +56,10 @@ class RedisInstanceTests(unittest.TestCase):
         here = os.path.split(os.path.abspath(__file__))[0]
         dumpfile = os.path.join(here, './resources/dump.rdb')
         instance = RedisInstance(10101, dumpfile=dumpfile)
-        self.assertEqual(instance.conn.get('foo'), 'bar')
+        self.assertEqual(instance.conn.get('foo'), b'bar')
         instance.terminate()
 
+    @pytest.mark.skipif(not HAS_GEVENT, reason="requires gevent")
     def test_gevent(self):
         """Test starting redis with gevent."""
         instance = RedisInstance(10101, use_gevent=True)

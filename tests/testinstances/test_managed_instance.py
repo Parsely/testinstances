@@ -1,11 +1,12 @@
 import mock
 import os
 import tempfile
-import unittest
 
+from testinstances.compat import unittest
 from testinstances import managed_instance, MongoInstance, RedisInstance
 from testinstances.exceptions import ProcessRunningError
 from testinstances.managed_instance import ManagedInstance
+
 
 class ManagedInstanceTests(unittest.TestCase):
 

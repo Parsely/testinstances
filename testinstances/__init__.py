@@ -16,5 +16,5 @@ limitations under the License.
 
 __version__ = '0.2.0'
 
-from mongo_instance import MongoInstance
-from redis_instance import RedisInstance
+from .mongo_instance import MongoInstance
+from .redis_instance import RedisInstance

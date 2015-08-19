@@ -53,18 +53,19 @@ class MongoInstance(ManagedInstance):
             stderr=utils.STDOUT,
             stdout=open(self.logfile, 'w'),
             use_gevent=self.use_gevent,
-            )
+        )
 
         # Connect to the shiny new instance
         self.conn = None
         fails = 0
+
         while self.conn is None:
             try:
-                conn = pymongo.MongoClient(port=self.port,
-                                           use_greenlets=self.use_gevent)
+                conn = pymongo.MongoClient(port=self.port)
                 if conn.alive():
                     self.conn = conn
             except:
+                log.exception('Failed to connect')
                 if fails >= self.timeout:
                     break
                 fails += 1
@@ -77,7 +78,7 @@ class MongoInstance(ManagedInstance):
             except:
                 pass  # file doesn't exist or whatever
             raise ProcessNotStartingError(
-                "Unable to start mongod in {} seconds.".format(self.timeout)
+                "Unable to start mongod in {0} seconds.".format(self.timeout)
             )
 
     def flush(self):

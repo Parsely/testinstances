@@ -54,6 +54,10 @@ class ManagedInstance(object):
         self.name = name
         self.use_gevent = use_gevent
 
+        if self.use_gevent:
+            from gevent import monkey
+            monkey.patch_all()
+
         os.mkdir(self._root_dir)
         try:
             self._start_process()

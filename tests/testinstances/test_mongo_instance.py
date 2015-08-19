@@ -1,8 +1,16 @@
 import mock
-import unittest
+from testinstances.compat import unittest
+import pytest
 
 from testinstances import managed_instance, MongoInstance
 from testinstances.exceptions import ProcessNotStartingError
+
+try:
+    import gevent
+    HAS_GEVENT = True
+except ImportError:
+    HAS_GEVENT = False
+
 
 class MongoInstanceTests(unittest.TestCase):
 
@@ -25,12 +33,12 @@ class MongoInstanceTests(unittest.TestCase):
 
     def test_flush(self):
         """Test flushing the instance"""
-        instance = MongoInstance(10101)
+        instance = MongoInstance(10102)
         collection = instance.conn['someDb']['someCollection']
 
         collection.insert({'foo': 'bar'})
         self.assertEqual(
-            collection.find({'foo': 'bar'}).next()['foo'],
+            next(collection.find({'foo': 'bar'}))['foo'],
             'bar'
         )
 
@@ -46,6 +54,7 @@ class MongoInstanceTests(unittest.TestCase):
         self.assertGreater(len(logs), 1000)
         instance.terminate()
 
+    @pytest.mark.skipif(not HAS_GEVENT, reason="requires gevent")
     def test_gevent(self):
         """Test starting mongo with gevent."""
         instance = MongoInstance(10101, use_gevent=True)
