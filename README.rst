@@ -59,9 +59,17 @@ Developing
 ----------
 To run the tests you need to install all of the databases the tests run:
 
+For Debian/Ubuntu:
+
 .. code-block:: bash
 
     $ sudo apt-get install redis-server mongodb-server
+
+For OSX:
+
+.. code-block:: bash
+
+    $ sudo brew install redis mongodb
 
 Then you just run ``tox``.
 
