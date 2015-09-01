@@ -1,18 +1,18 @@
 import mock
-from testinstances.compat import unittest
+import unittest2
 import pytest
 
 from testinstances import managed_instance, MongoInstance
 from testinstances.exceptions import ProcessNotStartingError
 
 try:
-    import gevent
+    import gevent  # noqa
     HAS_GEVENT = True
 except ImportError:
     HAS_GEVENT = False
 
 
-class MongoInstanceTests(unittest.TestCase):
+class MongoInstanceTests(unittest2.TestCase):
 
     def tearDown(self):
         managed_instance._cleanup()
@@ -29,7 +29,6 @@ class MongoInstanceTests(unittest.TestCase):
     def test_failure(self, *args):
         """Test an instance that refuses to start"""
         self.assertRaises(ProcessNotStartingError, lambda: MongoInstance(10101))
-
 
     def test_flush(self):
         """Test flushing the instance"""
@@ -64,4 +63,4 @@ class MongoInstanceTests(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest2.main()

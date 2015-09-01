@@ -1,7 +1,7 @@
 import mock
 import os
 import redis
-from testinstances.compat import unittest
+import unittest2
 import pytest
 
 from testinstances import managed_instance, RedisInstance
@@ -14,7 +14,7 @@ except ImportError:
     HAS_GEVENT = False
 
 
-class RedisInstanceTests(unittest.TestCase):
+class RedisInstanceTests(unittest2.TestCase):
 
     def tearDown(self):
         managed_instance._cleanup()
@@ -69,4 +69,4 @@ class RedisInstanceTests(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest2.main()

@@ -1,14 +1,14 @@
 import mock
 import os
+import unittest2
 import tempfile
 
-from testinstances.compat import unittest
 from testinstances import managed_instance, MongoInstance, RedisInstance
 from testinstances.exceptions import ProcessRunningError
 from testinstances.managed_instance import ManagedInstance
 
 
-class ManagedInstanceTests(unittest.TestCase):
+class ManagedInstanceTests(unittest2.TestCase):
 
     def tearDown(self):
         managed_instance._cleanup()
@@ -39,7 +39,7 @@ class ManagedInstanceTests(unittest.TestCase):
             instance = ManagedInstance('foo2')
             instance._process = mock.MagicMock()
             self.assertRaises(NotImplementedError, lambda: instance.flush())
-            open(instance.logfile, 'w').write('ohai') # so can delete
+            open(instance.logfile, 'w').write('ohai')  # so can delete
             instance.terminate()
 
     def test_multiple_instances(self):
@@ -52,4 +52,4 @@ class ManagedInstanceTests(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest2.main()
