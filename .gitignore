@@ -6,3 +6,7 @@
 .coverage
 build/
 dist/
+coverage.xml
+
+.*.un~
+.*.swp

@@ -16,11 +16,13 @@ limitations under the License.
 """
 
 import sys
+import os
 
 from setuptools import setup, find_packages
+from setuptools.command.test import test as TestCommand
 
 install_requires = [
-    'pymongo',
+    'pymongo<=2.8.1',
     'redis',
 ]
 
@@ -29,7 +31,32 @@ lint_requires = [
     'pyflakes'
 ]
 
-tests_require = ['mock', 'nose', 'coverage', 'gevent>=1.0.0']
+
+def read_lines(fname):
+    with open(os.path.join(os.path.dirname(__file__), fname)) as f:
+        return f.readlines()
+
+tests_require = [x.strip() for x in read_lines('test-requirements.txt')]
+
+
+class PyTest(TestCommand):
+    user_options = [('pytest-args=', 'a', "Arguments to pass to py.test")]
+
+    def initialize_options(self):
+        TestCommand.initialize_options(self)
+        self.pytest_args = []
+
+    def finalize_options(self):
+        TestCommand.finalize_options(self)
+        self.test_args = []
+        self.test_suite = True
+
+    def run_tests(self):
+        # import here, cause outside the eggs aren't loaded
+        import pytest
+        errno = pytest.main(self.pytest_args)
+        sys.exit(errno)
+
 
 setup_requires = []
 if 'nosetests' in sys.argv[1:]:
@@ -51,6 +78,7 @@ setup(
         'test': tests_require,
         'all': install_requires + tests_require,
     },
+    cmdclass={'test': PyTest},
     zip_safe=False,
     test_suite='nose.collector',
     include_package_data=True,
