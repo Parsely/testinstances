@@ -10,7 +10,7 @@ Examples
 The API is straightforward and easily embedeed in setup/teardown functions. It also automatically returns a connection
 to the instance.:
 
-::
+.. code-block:: python
 
     import unittest
 
@@ -30,7 +30,7 @@ to the instance.:
 
 Or, if you wanted to be fancy and avoid the process creation/termination cost for every test case:
 
-::
+.. code-block:: python
 
     import unittest
 
