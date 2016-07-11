@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Copyright 2013 Parse.ly, Inc.
+Copyright 2013-2016 Parse.ly, Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -20,16 +20,6 @@ import os
 
 from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
-
-install_requires = [
-    'pymongo<=2.8.1',
-    'redis',
-]
-
-lint_requires = [
-    'pep8',
-    'pyflakes'
-]
 
 
 def read_lines(fname):
@@ -71,13 +61,8 @@ setup(
     description='Managed test instances for integration tests',
     license='Apache License 2.0',
     packages=find_packages(),
-    install_requires=install_requires,
     tests_require=tests_require,
     setup_requires=setup_requires,
-    extras_require={
-        'test': tests_require,
-        'all': install_requires + tests_require,
-    },
     cmdclass={'test': PyTest},
     zip_safe=False,
     test_suite='nose.collector',
